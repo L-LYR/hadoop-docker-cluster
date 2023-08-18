@@ -9,10 +9,8 @@ RUN sed -i s@/archive.ubuntu.com/@/mirrors.tuna.tsinghua.edu.cn/@g /etc/apt/sour
 RUN apt-get clean && apt-get update && apt-get install -y openssh-server openjdk-8-jdk wget nano iputils-ping net-tools telnet
 
 # Install HADOOP
-RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-2.7.7/hadoop-2.7.7.tar.gz && \
-    tar -xzvf hadoop-2.7.7.tar.gz && \
-    mv hadoop-2.7.7 /usr/local/hadoop && \
-    rm hadoop-2.7.7.tar.gz
+ADD hadoop-2.7.7.tar.gz .
+RUN mv hadoop-2.7.7 /usr/local/hadoop
 
 # Set environment variables
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -31,15 +29,15 @@ RUN mkdir -p /root/hdfs/namenode && \
     mkdir $HADOOP_HOME/logs
 
 # Copy resources from the host to the docker container
-ADD config/ssh_config /root/.ssh/config
-ADD config/hadoop-env.sh $HADOOP_HOME/etc/hadoop/hadoop-env.sh
-ADD config/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-ADD config/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
-ADD config/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
-ADD config/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
-ADD config/slaves $HADOOP_HOME/etc/hadoop/slaves
-ADD config/start_hadoop.sh /root/start_hadoop.sh
-ADD config/run_wordcount.sh /root/run_wordcount.sh
+COPY config/ssh_config /root/.ssh/config
+COPY config/hadoop-env.sh $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+COPY config/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+COPY config/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
+COPY config/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
+COPY config/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
+COPY config/slaves $HADOOP_HOME/etc/hadoop/slaves
+COPY config/start_hadoop.sh /root/start_hadoop.sh
+COPY config/run_wordcount.sh /root/run_wordcount.sh
 
 RUN chmod +x /root/start_hadoop.sh && \
     chmod +x /root/run_wordcount.sh && \
